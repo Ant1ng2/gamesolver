@@ -1,0 +1,11 @@
+logic/Game.py
+logic/GameManager.py
+logic/Solver.py
+logic/__init__.py
+logic/util.py
+logic/TicTacToe/Tic.py
+logic/TicTacToe/__init__.py
+myproject.egg-info/PKG-INFO
+myproject.egg-info/SOURCES.txt
+myproject.egg-info/dependency_links.txt
+myproject.egg-info/top_level.txt
