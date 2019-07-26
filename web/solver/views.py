@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 
+import sys
+sys.path.append('../')
+
 from logic.TicTacToe import Tic
 from logic.Solver import Solver
 

@@ -99,9 +99,6 @@ class TicTacToe(Game):
             return Value.UNDECIDED
 
     def toString(self):
-        return self.serialize()
-
-    def serialize(self):
         string = ""
 
         for i in range(self.len * self.len):
@@ -110,6 +107,9 @@ class TicTacToe(Game):
             string += self.getPiece(i % self.len, i // self.len)
         return string
 
+    def serialize(self):
+        return self.hash()
+        
     def hash(self):
         string = ""
         for row in self.board:

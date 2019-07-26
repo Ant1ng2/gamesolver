@@ -1,6 +1,5 @@
 from util import *
 from Game import *
-from TicTacToe.Tic import TicTacToe
 
 class GameManager:
 
@@ -26,7 +25,6 @@ class GameManager:
         print(self.game.getTurn(), "'s turn")
         code = self.game.hash()
         print(self.game.hash())
-        print(TicTacToe(code=code).toString())
         print(self.game.toString())
         print(self.game.turn)
         print("Possible Moves:", self.game.generateMoves())
