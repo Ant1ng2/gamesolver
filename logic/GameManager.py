@@ -20,13 +20,10 @@ class GameManager:
     # Prints the game info
     def printInfo(self):
         if self.solver:
-            print("Solver:", self.solver.solve(self.game))
-        print("Primitive:", self.game.primitive())
+            print("Solver:        ", self.solver.solve(self.game))
+        print("Primitive:     ", self.game.primitive())
         print(self.game.getTurn(), "'s turn")
-        code = self.game.hash()
-        print(self.game.hash())
         print(self.game.toString())
-        print(self.game.turn)
         print("Possible Moves:", self.game.generateMoves())
 
     # Prompts for input and moves

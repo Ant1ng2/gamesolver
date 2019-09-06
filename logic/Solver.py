@@ -1,4 +1,8 @@
 from util import *
+# This solver code is my own written creation (Anthony Ling). You can find the source code 
+# at https://github.com/Ant1ng2/Gamesolver
+
+# util module not included
 
 class Solver():
 
