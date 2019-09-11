@@ -9,6 +9,9 @@ class Solver():
     def __init__(self):
         self.memory = {}
 
+    def numValues(self, value):
+        return len([i for i in self.memory.values() if i == value])
+
     def resetMemory(self):
         self.memory.clear()
 
@@ -33,11 +36,11 @@ class Solver():
             return primitive
         tieFlag = False
         for move in game.generateMoves():
-            newTicTacToe = game.doMove(move)
-            if self.solve(newTicTacToe) == Value.LOSE:
+            newGame = game.doMove(move)
+            if self.solve(newGame) == Value.LOSE:
                 self.memory[serialized] = Value.WIN
                 return Value.WIN # Not necessarily traverse all subtree
-            if self.solve(newTicTacToe) == Value.TIE:
+            if self.solve(newGame) == Value.TIE:
                 tieFlag = True
         if tieFlag:
             self.memory[serialized] = Value.TIE
@@ -61,9 +64,9 @@ class Solver():
 
         for move in game.generateMoves():
             newTicTacToe = game.doMove(move)
-            if self.solve(newTicTacToe) == Value.LOSE:
+            if self.solveTraverse(newTicTacToe) == Value.LOSE:
                 winFlag = True
-            if self.solve(newTicTacToe) == Value.TIE:
+            if self.solveTraverse(newTicTacToe) == Value.TIE:
                 tieFlag = True
 
         if not winFlag: # There does not exist a losing child

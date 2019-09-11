@@ -22,6 +22,9 @@ class GameManager:
         if self.solver:
             print("Solver:        ", self.solver.solve(self.game))
         print("Primitive:     ", self.game.primitive())
+        print("Wins: ", self.solver.numValues(Value.WIN), 
+            "Loses: ", self.solver.numValues(Value.LOSE), 
+            "Ties: ", self.solver.numValues(Value.TIE))
         print(self.game.getTurn(), "'s turn")
         print(self.game.toString())
         print("Possible Moves:", self.game.generateMoves())
