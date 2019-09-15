@@ -112,16 +112,23 @@ class TicTacToe(Game):
         
     def hash(self):
         string = ""
-        for row in self.board:
-            for char in row:
-                if char == " ":
-                    string += "0"            
-                if char == "X":
-                    string += "1"
-                if char == "O":
-                    string += "2"
-        string += self.turn
-        return string
+        stringHashes = []
+        cur_board = self.board
+        for _ in range(2):
+            for _ in range(4):            
+                for row in cur_board:
+                    for char in row:
+                        if char == " ":
+                            string += "0"            
+                        if char == "X":
+                            string += "1"
+                        if char == "O":
+                            string += "2"
+                string += self.turn
+                stringHashes += [string]
+                cur_board = [row[0] for row in zip(cur_board[::-1])]
+            cur_board = [row[::-1] for row in cur_board]
+        return min(stringHashes)
 
     def moveFromInput(self, prompt):
         print(prompt)

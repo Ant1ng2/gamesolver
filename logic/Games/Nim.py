@@ -50,7 +50,7 @@ class Nim(Game):
         return int(input())
 
 if __name__ == '__main__':
-    game = Nim(100, [1, 3, 4])
+    game = Nim(10, [1, 2])
     solver = Solver.Solver()
     gameManager = GameManager(game, solver)
     gameManager.play()
