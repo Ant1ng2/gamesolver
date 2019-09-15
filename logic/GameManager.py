@@ -25,9 +25,13 @@ class GameManager:
         print("Wins: ", self.solver.numValues(Value.WIN), 
             "Loses: ", self.solver.numValues(Value.LOSE), 
             "Ties: ", self.solver.numValues(Value.TIE))
+        print("Remoteness: ", self.solver.getRemoteness(self.game))
         print(self.game.getTurn(), "'s turn")
         print(self.game.toString())
         print("Possible Moves:", self.game.generateMoves())
+
+    # Returns table of remoteness
+    
 
     # Prompts for input and moves
     def printTurn(self):
