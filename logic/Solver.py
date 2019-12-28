@@ -1,5 +1,7 @@
 from util import *
+import csv
 import math
+import os
 # This solver code is my own written creation (Anthony Ling). You can find the source code 
 # at https://github.com/Ant1ng2/Gamesolver
 
@@ -7,12 +9,27 @@ import math
 
 class Solver():
 
-    def __init__(self):
+    def __init__(self, name=None):
         self.memory = {}
         self.remoteness = {}
+        path = os.path.join(os.getcwd() + r'/solved/', name)
+        try:
+            with open(path, 'r') as f:
+                reader = csv.reader(f)
+                self.memory = {rows[0]:rows[1] for rows in reader}
+                del self.memory['key']
+        except:
+            print("Automatically solving manually as path not found: " + path)
 
     def resetMemory(self):
         self.memory.clear()
+
+    def writeMemory(self, name=r'untitled.csv'):        
+        path = os.path.join(os.getcwd() + r'/solved/', name)
+        with open(path, 'w') as f:
+            f.write("%s,%s\n"%("key", "value"))
+            for key in self.memory.keys():
+                f.write("%s,%s\n"%(key, self.memory[key]))
 
     def numValues(self, value):
         return len([i for i in self.memory.values() if i == value])
@@ -50,6 +67,7 @@ class Solver():
         winFlag = False
         tieFlag = False
         serialized = game.serialize()
+        # if len(self.memory) % 1000 == 0: print(len(self.memory))
 
         if serialized in self.memory:
             return self.memory[serialized]

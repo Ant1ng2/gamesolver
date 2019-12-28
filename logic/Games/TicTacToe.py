@@ -18,12 +18,12 @@ class TicTacToe(Game):
         if code:
             row = []
             for i in code[:-1]:
-                if (i == '0'):
+                if (i == ' '):
                     row.append(" ")
-                if (i == '1'):
+                if (i == 'X'):
                     row.append("X")
                     self.count += 1
-                if (i == '2'):
+                if (i == 'O'):
                     row.append("O")
                     self.count += 1
                 if len(row) == size:
@@ -119,11 +119,11 @@ class TicTacToe(Game):
                 for row in cur_board:
                     for char in row:
                         if char == " ":
-                            string += "0"            
+                            string += " "            
                         if char == "X":
-                            string += "1"
+                            string += "X"
                         if char == "O":
-                            string += "2"
+                            string += "O"
                 string += self.turn
                 stringHashes += [string]
                 cur_board = [row[0] for row in zip(cur_board[::-1])]
@@ -146,4 +146,5 @@ if __name__ == '__main__':
     game = TicTacToe(3)
     solver = Solver.Solver()
     gameManager = GameManager(game, solver)
+    print(solver.writeMemory())
     gameManager.play()
