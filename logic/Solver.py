@@ -12,14 +12,14 @@ from multiprocessing import Process, Value, Array, Manager, current_process
 
 class Solver():
 
-    def __init__(self, name=None, read=False, mp=False):
+    def __init__(self, name='', read=False, mp=False):
         self.memory = {}
         self.remoteness = {}
         if mp: self.solve = self.solveTraverseMP
         if not mp: self.solve = self.solveTraverse
         path = os.path.join(os.getcwd() + r'/solved/', name)
         try:
-            assert name is not None
+            assert name
             assert read
             with open(path, 'r') as f:
                 reader = csv.reader(f)
