@@ -7,11 +7,11 @@ class GameManager:
         self.game = game
         self.solver = solver
         if solver:
-            self.solver.solveTraverse(self.game)
+            self.solver.solve(self.game)
 
     # Starts the GameManager
     def play(self):
-        while self.game.primitive() == Value.UNDECIDED:
+        while self.game.primitive() == GameValue.UNDECIDED:
             self.printInfo()
             self.printTurn()
         self.printInfo()
@@ -22,10 +22,10 @@ class GameManager:
         if self.solver:
             print("Solver:        ", self.solver.solve(self.game))
         print("Primitive:     ", self.game.primitive())
-        print("Wins: ", self.solver.numValues(Value.WIN), 
-            "Loses: ", self.solver.numValues(Value.LOSE), 
-            "Ties: ", self.solver.numValues(Value.TIE))
-        print("Remoteness: ", self.solver.getRemoteness(self.game))
+        print("Wins: ", self.solver.numValues(GameValue.WIN), 
+            "Loses: ", self.solver.numValues(GameValue.LOSE), 
+            "Ties: ", self.solver.numValues(GameValue.TIE))
+        print("Remoteness: ", self.solver.getRemoteness(self.game.serialize()))
         print(self.game.getTurn(), "'s turn")
         print(self.game.toString())
         print("Possible Moves:", self.game.generateMoves())

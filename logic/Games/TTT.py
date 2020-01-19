@@ -8,7 +8,7 @@ sys.path.insert(0,parentdir)
 from Game import Game
 import Solver
 from GameManager import *
-from util import Value
+from util import GameValue
 
 FIRST = "X"
 SECOND = "O"
@@ -50,23 +50,23 @@ class TTT(Game):
     def primitive(self):
         # Horizontals
         for row in self.board:
-            if len(set(row)) == 1 and row[0] != NONE: return Value.LOSE
+            if len(set(row)) == 1 and row[0] != NONE: return GameValue.LOSE
         
         # Verticals
         for col_num in range(len(self.board[0])):
             col = [row[col_num] for row in self.board]
-            if len(set(col)) == 1 and col[0] != NONE: return Value.LOSE
+            if len(set(col)) == 1 and col[0] != NONE: return GameValue.LOSE
         
         # Diagonals
             diag1 = [self.board[i][i] for i in range(len(self.board[0]))]
             diag2 = [self.board[i][len(self.board[0])-1-i] for i in range(len(self.board[0]))]
-            if len(set(diag1)) == 1 and diag1[0] != NONE: return Value.LOSE
-            if len(set(diag2)) == 1 and diag2[0] != NONE: return Value.LOSE
+            if len(set(diag1)) == 1 and diag1[0] != NONE: return GameValue.LOSE
+            if len(set(diag2)) == 1 and diag2[0] != NONE: return GameValue.LOSE
 
         if len(self.generateMoves()) == 0:
-            return Value.TIE
+            return GameValue.TIE
 
-        return Value.UNDECIDED
+        return GameValue.UNDECIDED
 
     def toString(self):
         string = ""
@@ -77,7 +77,8 @@ class TTT(Game):
     def serialize(self):
         switch = { 
             FIRST : { FIRST : FIRST, SECOND : SECOND, NONE : NONE }, 
-            SECOND : { FIRST : SECOND, SECOND : FIRST, NONE : NONE } 
+            SECOND : { SECOND : FIRST, FIRST : SECOND, NONE : NONE }
+            #,SECOND : { FIRST : SECOND, SECOND : FIRST, NONE : NONE } 
         }
         flatten_list = [switch[self.turn][entry] for row in self.reduction() for entry in row]
         return "".join(flatten_list)
@@ -106,7 +107,8 @@ class TTT(Game):
         return tuple(int(x.strip()) for x in input().split(','))
 
 if __name__ == '__main__':
-    game = TTT(size=4)
-    solver = Solver.Solver(name=game.name)
+    game = TTT(size=3)
+    solver = Solver.Solver(name='TTT3AndRemotenessOptimized.csv', read=False, mp=False)
     gameManager = GameManager(game, solver)
+    solver.writeMemory('TTT3AndRemotenessOptimized.csv')
     gameManager.play()

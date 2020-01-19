@@ -1,4 +1,4 @@
-class Value:
+class GameValue:
     WIN = "Win"
     LOSE = "Lose"
     UNDECIDED = "Undecided"
