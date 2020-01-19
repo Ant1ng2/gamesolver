@@ -1,7 +1,7 @@
 import pytest
 
-from Games.TTT import TTT
-from Solver import Solver 
+from . Games.TTT import TTT
+from . Solver import Solver 
 import util
 
 def test_primitive():
