@@ -6,8 +6,7 @@ class TierGame(Game):
     @abstractmethod
     def getNumTiers(self):
         pass
-    
-    @staticmethod
+
     @abstractmethod
-    def generateTierBoards(game, tier=0):
+    def getCurTier(self):
         pass

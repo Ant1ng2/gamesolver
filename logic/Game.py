@@ -2,6 +2,11 @@ from abc import ABC, abstractmethod
 
 class Game(ABC):
 
+    # Returns the beginning state of a Game
+    @abstractmethod
+    def getBase(self):
+        pass
+
     # Returns a string that is the current player's turn
     @abstractmethod
     def getTurn(self):

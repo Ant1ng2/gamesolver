@@ -7,6 +7,7 @@ sys.path.insert(0,parentdir)
 
 from TierGame import TierGame
 import Solver
+import TierSolver
 from GameManager import *
 from util import GameValue
 
@@ -20,8 +21,12 @@ class TTT(TierGame):
         self.turn = turn
         self.name = "TTT"+str(size)+"Optimized.csv"
         self.size = size
+        self.numPieces = 0
         self.board = [[NONE for _ in range(size)] for _ in range(size)]
     
+    def getBase(self):
+        return TTT(self.size, self.getFirstPlayer())
+
     def getTurn(self):
         return self.turn
 
@@ -32,6 +37,7 @@ class TTT(TierGame):
         return SECOND
 
     def generateMoves(self):
+        if self.primitive() != GameValue.UNDECIDED: return []
         moves = []
         for row in range(len(self.board)):
             for col in range(len(self.board[0])):
@@ -45,7 +51,9 @@ class TTT(TierGame):
         board = deepcopy(self.board)
         board[move[0]][move[1]] = self.turn
         game = TTT(turn=switch[self.turn])
+        game.size = self.size
         game.board = board
+        game.numPieces = self.numPieces + 1
         return game
 
     def primitive(self):
@@ -64,7 +72,7 @@ class TTT(TierGame):
             if len(set(diag1)) == 1 and diag1[0] != NONE: return GameValue.LOSE
             if len(set(diag2)) == 1 and diag2[0] != NONE: return GameValue.LOSE
 
-        if len(self.generateMoves()) == 0:
+        if self.numPieces == self.size ** 2:
             return GameValue.TIE
 
         return GameValue.UNDECIDED
@@ -110,35 +118,29 @@ class TTT(TierGame):
     def getNumTiers(self):
         return self.size ** 2 + 1
 
-    def generateTierBoards(game, tier=0):
-        assert game
-        def helper(game, tier):
-            if tier == 0: return [game]
-            boards = []
-            for move in game.generateMoves():
-                boards += helper(game.doMove(move), tier-1)
-            return boards
-        boards = helper(game, tier)
-        mydict = { board.serialize():board for board in boards }
-        return mydict.values()        
+    def getCurTier(self):
+        return self.numPieces
 
 def wrapper(func, *args, **kwargs):
     def wrapped():
         return func(*args, **kwargs)
     return wrapped
 
-def execute(size=3, mp=False):
+def execute(size=3, tier=True, name='', read=False, mp=False):
     game = TTT(size=size)
-    solver = Solver.Solver(mp=mp)
+    if tier: solver = TierSolver.TierSolver(game, name=name, read=read, mp=mp)
+    else: solver = Solver.Solver(game, name=name, read=read, mp=mp)
     gameManager = GameManager(game, solver)
     return gameManager
 
 from timeit import timeit
 
 if __name__ == '__main__':
-    wrapped = wrapper(lambda game, tier : TTT.generateTierBoards(game, tier), TTT(size=4), 16) 
+    """for i in range(10):
+        wrapped = wrapper(lambda game, tier : [i.serialize() for i in game.generateTierBoards(game, tier)], TTT(size=3), i) 
+        print(timeit(wrapped, number=1))
+        print(wrapped())"""
+    wrapped = wrapper(execute, size=3)
     print(timeit(wrapped, number=1))
-    #wrapped = wrapper(execute, size=3, mp=True)
-    #print(timeit(wrapped, number=1))
-    #wrapped = wrapper(execute, size=3)
-    #print(timeit(wrapped, number=1))
+    wrapped = wrapper(execute, tier=False, size=3)
+    print(timeit(wrapped, number=1))

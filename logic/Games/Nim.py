@@ -15,6 +15,9 @@ class Nim(Game):
         self.turn = turn
         self.moves = moves
 
+    def getBase(self):
+        return Nim(start = self.start, moves = self.moves, turn = self.getFirstPlayer())
+
     def getTurn(self):
         return self.turn
 
