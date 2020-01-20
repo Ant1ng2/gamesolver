@@ -18,15 +18,14 @@ class Solver():
         if mp: self.solve = self.solveTraverseMP
         if not mp: self.solve = self.solveTraverse
         path = os.path.join(os.getcwd() + r'/solved/', name)
-        try:
-            assert name
-            assert read
-            with open(path, 'r') as f:
-                reader = csv.reader(f)
-                self.memory = {rows[0]:rows[1] for rows in reader}
-                del self.memory['key']
-        except:
-            print("Automatically solving manually as path not found: " + path)
+        if name and read:
+            try:
+                with open(path, 'r') as f:
+                    reader = csv.reader(f)
+                    self.memory = {rows[0]:rows[1] for rows in reader}
+                    del self.memory['key']
+            except:
+                print("Automatically solving manually as path not found: " + path)
 
     def resetMemory(self):
         self.memory.clear()
@@ -43,86 +42,6 @@ class Solver():
 
     def getRemoteness(self, key=None):
         return self.remoteness[key]
-
-    def solveTraverseMP(self, game):
-        winFlag = Value('i', False)
-        tieFlag = Value('i', False)
-        self.memory = Manager().dict()
-        self.remoteness = Manager().dict()
-
-        serialized = game.serialize()
-        # if len(self.memory) % 1000 == 0: print(len(self.memory))
-
-        if serialized in self.memory:
-            return self.memory[serialized]
-        primitive = game.primitive()
-
-        if primitive != GameValue.UNDECIDED:
-            self.memory[serialized] = primitive
-            self.remoteness[serialized] = 0
-            return primitive
-
-        min_remote = Value('i', -1)
-
-        def worker(move):
-            print(current_process().name, "start")
-            newTicTacToe = game.doMove(move)
-            value = self.solveTraverse(newTicTacToe)
-            remote = self.remoteness[newTicTacToe.serialize()] + 1
-            if min_remote.value == -1: min_remote.value = remote
-            if value == GameValue.LOSE:
-                if tieFlag and not winFlag: min_remote.value = remote
-                min_remote.value = min(min_remote.value, remote)
-                winFlag.value = True
-            if value == GameValue.TIE:
-                if not winFlag.value: 
-                    min_remote.value = max(min_remote.value, remote)
-                    tieFlag.value = True
-            # You are losing and want to maximize
-            if value == GameValue.WIN and not (winFlag.value or tieFlag.value): min_remote.value = max(min_remote.value, remote)
-            print(current_process().name, "end")
-
-        processes = []
-
-        for move in game.generateMoves():
-            p = Process(target=worker, args=(move,))
-            processes.append(p)
-            p.start()
-        for p in processes:
-            p.join()
-
-        if not winFlag.value: # There does not exist a losing child
-            if tieFlag.value: # There exists a tie
-                self.memory[serialized] = GameValue.TIE
-            else: # There is no tie
-                self.memory[serialized] = GameValue.LOSE
-        else:
-            self.memory[serialized] = GameValue.WIN
-        self.remoteness[serialized] = min_remote.value
-        return self.memory[serialized]
-
-    # this one will end when it finds the next instance as Win
-    def solve(self, game):
-        serialized = game.serialize()
-        if serialized in self.memory:
-            return self.memory[serialized]
-        primitive = game.primitive()
-        if primitive != GameValue.UNDECIDED:
-            self.memory[serialized] = primitive
-            return primitive
-        tieFlag = False
-        for move in game.generateMoves():
-            newGame = game.doMove(move)
-            if self.solve(newGame) == GameValue.LOSE:
-                self.memory[serialized] = GameValue.WIN
-                return GameValue.WIN # Not necessarily traverse all subtree
-            if self.solve(newGame) == GameValue.TIE:
-                tieFlag = True
-        if tieFlag:
-            self.memory[serialized] = GameValue.TIE
-            return GameValue.TIE
-        self.memory[serialized] = GameValue.LOSE
-        return GameValue.LOSE
 
     # this one will traverse all subtree
     def solveTraverse(self, game):
@@ -165,6 +84,34 @@ class Solver():
             self.memory[serialized] = GameValue.WIN
         self.remoteness[serialized] = min_remote
         return self.memory[serialized]
+
+    def solveTraverseMP(self, game):
+        self.memory = Manager().dict()
+        self.remoteness = Manager().dict()
+        serialized = game.serialize()
+        primitive = game.primitive()
+
+        if primitive != GameValue.UNDECIDED:
+            self.memory[serialized] = primitive
+            self.remoteness[serialized] = 0
+            return primitive
+
+        def worker(move):
+            #print(current_process().name, "start")
+            newTicTacToe = game.doMove(move)
+            self.solveTraverse(newTicTacToe)
+            #print(current_process().name, "end")
+
+        processes = []
+
+        for move in game.generateMoves():
+            p = Process(target=worker, args=(move,))
+            processes.append(p)
+            p.start()
+        for p in processes:
+            p.join()
+            
+        return self.solveTraverse(game)
 
     def generateMove(self, game):
         if game.generateMoves():
