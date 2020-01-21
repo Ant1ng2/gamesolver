@@ -1,15 +1,7 @@
 from copy import copy, deepcopy
 
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir) 
-
-from TierGame import TierGame
-import Solver
-import TierSolver
-from GameManager import *
-from util import GameValue
+from logic.Games.TierGame import TierGame
+from logic.util import GameValue
 
 FIRST = "X"
 SECOND = "O"
@@ -120,27 +112,3 @@ class TTT(TierGame):
 
     def getCurTier(self):
         return self.numPieces
-
-def wrapper(func, *args, **kwargs):
-    def wrapped():
-        return func(*args, **kwargs)
-    return wrapped
-
-def execute(size=3, tier=True, name='', read=False, mp=False):
-    game = TTT(size=size)
-    if tier: solver = TierSolver.TierSolver(game, name=name, read=read, mp=mp)
-    else: solver = Solver.Solver(game, name=name, read=read, mp=mp)
-    gameManager = GameManager(game, solver)
-    return gameManager
-
-from timeit import timeit
-
-if __name__ == '__main__':
-    """for i in range(10):
-        wrapped = wrapper(lambda game, tier : [i.serialize() for i in game.generateTierBoards(game, tier)], TTT(size=3), i) 
-        print(timeit(wrapped, number=1))
-        print(wrapped())"""
-    wrapped = wrapper(execute, size=3)
-    print(timeit(wrapped, number=1))
-    wrapped = wrapper(execute, tier=False, size=3)
-    print(timeit(wrapped, number=1))

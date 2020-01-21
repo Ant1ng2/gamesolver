@@ -1,5 +1,4 @@
-from util import *
-from Game import *
+from logic.util import *
 
 class GameManager:
 
