@@ -16,6 +16,6 @@ def test_TTT():
     game = TTT()
     assert game.primitive() == util.GameValue.UNDECIDED
     while game.generateMoves():
-        game = game.doMove(game.generateMoves()[0])
         assert game.primitive() == util.GameValue.UNDECIDED
+        game = game.doMove(game.generateMoves()[0])
     assert game.primitive() != util.GameValue.UNDECIDED
