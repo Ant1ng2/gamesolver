@@ -9,15 +9,17 @@ td {
     cursor: pointer;
 }
 
-table {
-    border-collapse: collapse;
+div.board {
     position: absolute;
     left: 50%;
-    margin-left: -155px;
     top: 50px;
 }
 
-table tr:first-child td {
+table {
+    border-collapse: collapse;
+}
+
+table tr:first-child td {  
     border-top: 0;
 }
 
@@ -38,13 +40,14 @@ table tr td:last-child {
     width: 200px;
     top: 120px;
     background-color: rgba(205, 133, 62, 0.8);
-    position: absolute;
-    left: 50%;
-    margin-left: -100px;
     padding-top: 50px;
     padding-bottom: 50px;
     text-align: center;
     border-radius: 5px;
     color: white;
     font-size: 2em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

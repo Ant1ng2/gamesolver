@@ -7,6 +7,7 @@ class TierSolver(Solver.Solver):
         super(TierSolver, self).__init__(*args, **kwargs)
         self.solve = self.solveTier
         self.generateTierBoards()
+        assert self.base
 
     def solveTier(self, game):
         serial = game.serialize()

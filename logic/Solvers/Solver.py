@@ -2,6 +2,7 @@ from .. util import *
 import csv
 import math
 import os
+import random
 
 from multiprocessing import Process, Value, Array, Manager, current_process
 
@@ -12,19 +13,22 @@ from multiprocessing import Process, Value, Array, Manager, current_process
 
 class Solver():
 
-    def __init__(self, game, name='', read=False, mp=False):
+    def __init__(self, game=None, name='', read=False, mp=False):
         self.memory = {}
         self.remoteness = {}
-        self.base = game.getBase()
+        self.base = game
         if mp: self.solve = self.solveTraverseMP
         if not mp: self.solve = self.solveTraverse
-        path = os.path.join(os.getcwd() + r'/solved/', name)
+        path = os.path.join(r'/mnt/d/Projects/Gamesolver/logic/Games/solved/', name)
         if name and read:
             try:
                 with open(path, 'r') as f:
                     reader = csv.reader(f)
-                    self.memory = {rows[0]:rows[1] for rows in reader}
+                    for row in reader:
+                        self.memory[row[0]] = row[1]
+                        self.remoteness[row[0]] = row[2]
                     del self.memory['key']
+                    del self.remoteness['key']
             except:
                 print("Automatically solving manually as path not found: " + path)
 
@@ -32,7 +36,7 @@ class Solver():
         self.memory.clear()
 
     def writeMemory(self, name=r'untitled.csv'):        
-        path = os.path.join(os.getcwd() + r'/solved/', name)
+        path = os.path.join(os.getcwd() + r'/Games/solved/', name)
         with open(path, 'w') as f:
             f.write("%s,%s,%s\n"%("key", "value", "remoteness"))
             for key in self.memory.keys():
@@ -115,14 +119,16 @@ class Solver():
         return self.solveTraverse(game)
 
     def generateMove(self, game):
-        if game.generateMoves():
-            tieMove = game.generateMoves()[0]
-            for move in game.generateMoves():
-                newGame = game.doMove(move)
-                # The AI could pick a winning position that doesn't directly end the game.
-                # TODO: Pick a move to end the game
-                if self.solve(newGame) == GameValue.LOSE:
-                    return move
-                if self.solve(newGame) == GameValue.TIE:
-                    tieMove = move
-            return tieMove
+        moveList = game.generateMoves()
+        if not moveList: return
+        random.shuffle(moveList)
+        tieMove = moveList[0]
+        for move in moveList:
+            newGame = game.doMove(move)
+            # The AI could pick a winning position that doesn't directly end the game.
+            # TODO: Pick a move to end the game
+            if self.solve(newGame) == GameValue.LOSE:
+                return move
+            if self.solve(newGame) == GameValue.TIE:
+                tieMove = move
+        return tieMove

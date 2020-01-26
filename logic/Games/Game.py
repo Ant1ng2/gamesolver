@@ -36,6 +36,10 @@ class Game(ABC):
     def primitive(self):
         pass
 
+    # Return the primitive state (for web solver)
+    def primitiveState(self):
+        return "Undefined"
+
     # Returns a string of the board state for player's use
     @abstractmethod
     def toString(self):

@@ -3,14 +3,16 @@ var string_hash = "";
 var huPlayer = 'X';
 var aiPlayer = 'O';
 const winCombos = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [6, 4, 2],
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9, 10, 11],
+    [12, 13, 14, 15],
+    [0, 4, 8, 12],
+    [1, 5, 9, 13],
+    [2, 6, 10, 14],
+    [3, 7, 11, 15],
+    [0, 5, 10, 15],
+    [3, 6, 9, 12]
 ]
 
 const cells = document.querySelectorAll('.cell');
@@ -18,7 +20,7 @@ startGame();
 
 function startGame() {
     document.querySelector(".endgame").style.display = "none";
-    origBoard = Array.from(Array(9).keys());
+    origBoard = Array.from(Array(16).keys());
     for (var i = 0; i < cells.length; i++) {
         cells[i].innerText = '';
         cells[i].style.removeProperty('background-color');
@@ -37,8 +39,7 @@ function turnClick(square) {
         turn(square.target.id, huPlayer);
         let gameWon = checkWin(origBoard, huPlayer);
         if (!gameWon && !checkTie()) {
-            loadSolution().then(value => {turn(value, aiPlayer);})
-   
+            loadSolution().then(value => {turn(value, aiPlayer);})   
         }
     }
 }
@@ -48,13 +49,13 @@ function turn(squareId, player) {
     string_hash = ""
     for (var i = 0; i < origBoard.length; i++) {
         if (origBoard[i] == aiPlayer) {
-            string_hash += "2";   
+            string_hash += "O";   
         }
         else if (origBoard[i] == huPlayer) {
-            string_hash += "1";
+            string_hash += "X";
         }
         else {
-            string_hash += "0";
+            string_hash += "_";
         }
     }
     document.getElementById(squareId).innerText = player;
@@ -107,7 +108,7 @@ function loadSolution() {
     })
     .then(function(myJson) {
         console.log(myJson);
-        return myJson.solution[0] * 3 + myJson.solution[1];
+        return myJson.solution[0] * 4 + myJson.solution[1];
     })
 }
 

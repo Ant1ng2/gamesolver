@@ -18,19 +18,17 @@ class GameManager:
 
     # Prints the game info
     def printInfo(self):
+        print("Primitive:     ", self.game.primitive())
         if self.solver:
             print("Solver:        ", self.solver.solve(self.game))
-        print("Primitive:     ", self.game.primitive())
-        print("Wins: ", self.solver.numValues(GameValue.WIN), 
+            print("Wins: ", self.solver.numValues(GameValue.WIN), 
             "Loses: ", self.solver.numValues(GameValue.LOSE), 
             "Ties: ", self.solver.numValues(GameValue.TIE))
-        print("Remoteness: ", self.solver.getRemoteness(self.game.serialize()))
+            print("Remoteness: ", self.solver.getRemoteness(self.game.serialize()))
+        print("Primitive state: ", self.game.primitiveState())
         print(self.game.getTurn(), "'s turn")
         print(self.game.toString())
         print("Possible Moves:", self.game.generateMoves())
-
-    # Returns table of remoteness
-    
 
     # Prompts for input and moves
     def printTurn(self):

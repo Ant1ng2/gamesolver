@@ -5,19 +5,29 @@ from logic.util import GameValue
 
 FIRST = "X"
 SECOND = "O"
-NONE = " "
+NONE = "_"
 
 class TTT(TierGame):
 
-    def __init__(self, size=3, turn=FIRST):
+    def __init__(self, size=3, winBy=None, turn=FIRST, code=None):
         self.turn = turn
-        self.name = "TTT"+str(size)+"Optimized.csv"
         self.size = size
         self.numPieces = 0
         self.board = [[NONE for _ in range(size)] for _ in range(size)]
+        if code: 
+            self.size = int(len(code) ** 0.5)
+            assert self.size % 1 == 0
+            numFIRST = code.count(FIRST)
+            numSECOND = code.count(SECOND)
+            diff = abs(numSECOND - numFIRST)
+            assert diff == 0 or diff == 1
+            self.turn = FIRST if numFIRST <= numSECOND else SECOND
+            self.numPieces = numFIRST + numSECOND
+            self.board = [[code[i + self.size * j] for i in range(self.size)] for j in range(self.size)]
+        self.winBy = winBy if winBy else self.size    
     
     def getBase(self):
-        return TTT(self.size, self.getFirstPlayer())
+        return TTT(size=self.size, turn=self.getFirstPlayer())
 
     def getTurn(self):
         return self.turn
@@ -44,29 +54,46 @@ class TTT(TierGame):
         board[move[0]][move[1]] = self.turn
         game = TTT(turn=switch[self.turn])
         game.size = self.size
+        game.winBy = self.winBy
         game.board = board
         game.numPieces = self.numPieces + 1
         return game
 
-    def primitive(self):
+    def primitiveState(self):
+        def end(indices):
+            start, length = 0, 0
+            same = NONE
+            for i, index in enumerate(indices):
+                length+=1
+                entry = self.board[index[0]][index[1]]
+                if entry == NONE: same, start, length = NONE, i, 0
+                if entry != same: same, start, length = entry, i, 1
+                if length >= self.winBy: return indices[start:start+length]
+            return []
+
+        indices = set()
         # Horizontals
-        for row in self.board:
-            if len(set(row)) == 1 and row[0] != NONE: return GameValue.LOSE
+        for row_num in range(len(self.board)):
+            row = [(row_num, j) for j in range(len(self.board))]
+            if end(row) : indices.update(end(row))
         
         # Verticals
         for col_num in range(len(self.board[0])):
-            col = [row[col_num] for row in self.board]
-            if len(set(col)) == 1 and col[0] != NONE: return GameValue.LOSE
-        
+            col = [(i, col_num) for i in range(len(self.board))]
+            if end(col): indices.update(end(col))
+
         # Diagonals
-            diag1 = [self.board[i][i] for i in range(len(self.board[0]))]
-            diag2 = [self.board[i][len(self.board[0])-1-i] for i in range(len(self.board[0]))]
-            if len(set(diag1)) == 1 and diag1[0] != NONE: return GameValue.LOSE
-            if len(set(diag2)) == 1 and diag2[0] != NONE: return GameValue.LOSE
+        def clamp(value): return value < self.size and value >= 0
+        for i in range(-self.size + 1, self.size):
+            diag1 = [(i + j, j) for j in range(self.size) if clamp(i + j)]
+            diag2 = [(j, self.size - 1 + i - j) for j in range(self.size) if clamp(self.size - 1 + i - j)]
+            if end(diag1): indices.update(end(diag1))
+            if end(diag2): indices.update(end(diag2))
+        return list(indices)
 
-        if self.numPieces == self.size ** 2:
-            return GameValue.TIE
-
+    def primitive(self):
+        if self.primitiveState(): return GameValue.LOSE
+        if self.numPieces == self.size ** 2: return GameValue.TIE
         return GameValue.UNDECIDED
 
     def toString(self):

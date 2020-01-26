@@ -4,8 +4,8 @@ from django.http import HttpResponse, JsonResponse
 import sys
 sys.path.append('../')
 
-from logic.TicTacToe import Tic
-from logic.Solver import Solver
+from logic.Games import TTT
+from logic.Solvers.Solver import Solver
 
 import re
 
@@ -21,19 +21,21 @@ class Cache:
     def generateMove(self, game):
         return self.solver.generateMove(game)
 
-cache = Cache(Solver())
+cache = Cache(Solver(name=r'TTT4AndRemotenessOptimized.csv', read=True))
 
 def index(request, turn, code):
-    reg = re.compile('^[012]{9}$')
+    code = code.replace("_", TTT.NONE)
+    reg = re.compile('^['+ TTT.FIRST + TTT.SECOND + TTT.NONE + ']{16}$')
     if not reg.match(code):
         return HttpResponse(status=404)
 
-    game = Tic.TicTacToe(code=code + turn)
+    game = TTT.TTT(code=code)
     context = {
         "prediction" : cache.solve(game),
         "turn" : game.getTurn(),
         "board" : game.toString(),
         "moves" : game.generateMoves(),
+        "primitiveState" : game.primitiveState(), 
         "solution" : cache.generateMove(game)
     }
     return JsonResponse(context)
