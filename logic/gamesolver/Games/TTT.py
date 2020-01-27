@@ -1,7 +1,7 @@
 from copy import copy, deepcopy
 
-from logic.Games.TierGame import TierGame
-from logic.util import GameValue
+from gamesolver.Games.TierGame import TierGame
+from gamesolver.util import GameValue
 
 FIRST = "X"
 SECOND = "O"

@@ -1,4 +1,4 @@
-from logic.util import *
+from gamesolver.util import *
 
 class GameManager:
 

@@ -1,5 +1,5 @@
-from logic.Solvers import Solver 
-from logic.util import *
+from gamesolver.Solvers import Solver 
+from gamesolver.util import *
 
 class TierSolver(Solver.Solver):
 

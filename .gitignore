@@ -3,3 +3,8 @@ __pycache__/
 *.sw[op]
 .vscode
 venv
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

@@ -19,8 +19,8 @@ class Solver():
         self.base = game
         if mp: self.solve = self.solveTraverseMP
         if not mp: self.solve = self.solveTraverse
-        path = os.path.join(r'/mnt/d/Projects/Gamesolver/logic/Games/solved/', name)
-        if name and read:
+        path = os.path.join(os.getcwd() + r'/', name)
+        if path and read:
             try:
                 with open(path, 'r') as f:
                     reader = csv.reader(f)
@@ -35,7 +35,7 @@ class Solver():
         self.memory.clear()
 
     def writeMemory(self, name=r'untitled.csv'):        
-        path = os.path.join(os.getcwd() + r'/Games/solved/', name)
+        path = os.path.join(os.getcwd() + r'/', name)
         with open(path, 'w') as f:
             f.write("%s,%s,%s\n"%("key", "value", "remoteness"))
             for key in self.memory.keys():
