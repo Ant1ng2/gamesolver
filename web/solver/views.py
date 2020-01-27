@@ -21,7 +21,7 @@ class Cache:
     def generateMove(self, game):
         return self.solver.generateMove(game)
 
-cache = Cache(Solver(name=r'TTT4AndRemotenessOptimized.csv', read=True))
+cache = Cache(Solver(name=r'TTT4by4win3AndRemotenessOptimized.csv', read=True))
 
 def index(request, turn, code):
     code = code.replace("_", TTT.NONE)
@@ -29,12 +29,13 @@ def index(request, turn, code):
     if not reg.match(code):
         return HttpResponse(status=404)
 
-    game = TTT.TTT(code=code)
+    game = TTT.TTT(code=code, winBy=3)
     context = {
         "prediction" : cache.solve(game),
         "turn" : game.getTurn(),
         "board" : game.toString(),
         "moves" : game.generateMoves(),
+        "primitive" : game.primitive(),
         "primitiveState" : game.primitiveState(), 
         "solution" : cache.generateMove(game)
     }

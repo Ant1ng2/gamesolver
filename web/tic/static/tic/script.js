@@ -1,19 +1,7 @@
 var origBoard;
-var string_hash = "";
+var string_hash = "________________";
 var huPlayer = 'X';
 var aiPlayer = 'O';
-const winCombos = [
-    [0, 1, 2, 3],
-    [4, 5, 6, 7],
-    [8, 9, 10, 11],
-    [12, 13, 14, 15],
-    [0, 4, 8, 12],
-    [1, 5, 9, 13],
-    [2, 6, 10, 14],
-    [3, 7, 11, 15],
-    [0, 5, 10, 15],
-    [3, 6, 9, 12]
-]
 
 const cells = document.querySelectorAll('.cell');
 startGame();
@@ -26,21 +14,25 @@ function startGame() {
         cells[i].style.removeProperty('background-color');
         cells[i].addEventListener('click', turnClick, false);
     }
+    string_hash = "________________"
+    checkWin("X").then(function(gameWon) {
+        if (!gameWon.solution) { gameOver(gameWon); }
+        else if (checkTie()) {}
+        else if (aiPlayer === "X") { turn(gameWon.solution, aiPlayer) }
+    })
 }
 
 function switchSides() {
-    startGame();
     huPlayer = (huPlayer === "X") ? "O" : "X";
     aiPlayer = (aiPlayer === "O") ? "X" : "O";
+    startGame();
 }
 
 function turnClick(square) {
     if (typeof origBoard[square.target.id] == 'number') {
-        turn(square.target.id, huPlayer);
-        let gameWon = checkWin(origBoard, huPlayer);
-        if (!gameWon && !checkTie()) {
-            loadSolution().then(value => {turn(value, aiPlayer);})   
-        }
+        turn(square.target.id, huPlayer).then(function(gameWon) {
+            if (gameWon.solution && !checkTie()) {turn(gameWon.solution, aiPlayer)}    
+        });
     }
 }
 
@@ -49,41 +41,44 @@ function turn(squareId, player) {
     string_hash = ""
     for (var i = 0; i < origBoard.length; i++) {
         if (origBoard[i] == aiPlayer) {
-            string_hash += "O";   
+            string_hash += aiPlayer;   
         }
         else if (origBoard[i] == huPlayer) {
-            string_hash += "X";
+            string_hash += huPlayer;
         }
         else {
             string_hash += "_";
         }
     }
     document.getElementById(squareId).innerText = player;
-    let gameWon = checkWin(origBoard, player); 
-    let gameTie = checkTie()
-    if (gameWon) {
-        gameOver(gameWon);
-    }
-    else {
-        checkTie();
-    }
+    return checkWin(player).then(function(gameWon) {
+        if (!gameWon.solution) { gameOver(gameWon); }
+        else { checkTie(); }
+        return gameWon;   
+    }); 
 }
 
-function checkWin(board, player) {
-    let plays = board.reduce((a, e, i) =>
-        (e === player) ? a.concat(i) : a, []);
-    let gameWon = null;
-    for (let [index, win] of winCombos.entries()) {
-        if (win.every(elem => plays.indexOf(elem) > -1)) {
-            gameWon = {index: index, player: player};
-            break;
+function checkWin(player) {
+    return fetchJson(player).then(function(myJson) {
+        console.log(myJson)
+        var mapping = myJson.primitiveState.map((val)=>{
+            return val[0] * 4 + val[1];
+        });
+        let gameWon = {solution : (myJson.solution) ? myJson.solution[0] * 4 + myJson.solution[1] : null,
+            player : null,
+            index : mapping};
+        if (myJson.primitive === "Lose") {
+            gameWon.player = player;        
         }
-    }
-    return gameWon;
+        if (myJson.primitive === "Win") {
+            gameWon.player = huPlayer === player ? aiPlayer : huPlayer;
+        }
+        return gameWon;
+    })
 }
 
 function gameOver(gameWon) {
-    for (let index of winCombos[gameWon.index]) {
+    for (let index of gameWon.index) {
         document.getElementById(index).style.backgroundColor = 
             gameWon.player == huPlayer ? "blue" : "red";
     }
@@ -102,13 +97,9 @@ function emptySquares() {
     return origBoard.filter(s => (typeof s) == 'number')
 }
 
-function loadSolution() {
-    return fetch('/solver/' + aiPlayer + '/' + string_hash).then(function(response) {
+function fetchJson(player) {
+    return fetch('/solver/' + player + '/' + string_hash).then(function(response) {
         return response.json();
-    })
-    .then(function(myJson) {
-        console.log(myJson);
-        return myJson.solution[0] * 4 + myJson.solution[1];
     })
 }
 
