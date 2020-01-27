@@ -1,4 +1,12 @@
 __pycache__/
 *.py[cod]
 *.sw[op]
+.vscode
 venv
+build
+.pytest_cache
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
