@@ -10,3 +10,7 @@ build
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Build files
+gamesolver.egg-info
+dist
