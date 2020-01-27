@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - pytest logic/tests/test.py
+  - pytest gamesolver/tests/test.py
