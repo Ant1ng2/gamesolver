@@ -15,9 +15,8 @@ function startGame() {
         cells[i].addEventListener('click', turnClick, false);
     }
     string_hash = "________________"
-    checkWin("X").then(function(gameWon) {
-        if (!gameWon.solution) { gameOver(gameWon); }
-        else if (checkTie()) {}
+    checkWin("X").then((gameWon) => {
+        if (gameWon.player && !checkTie()) { gameOver(gameWon) }
         else if (aiPlayer === "X") { turn(gameWon.solution, aiPlayer) }
     })
 }
@@ -28,10 +27,31 @@ function switchSides() {
     startGame();
 }
 
+function checkWin(player) {
+    return fetchJson(player).then(function(myJson) {
+        console.log(myJson)
+        var mapping = myJson.primitiveState.map((val)=>{
+            return val[0] * 4 + val[1];
+        });
+        let gameWon = {
+            solution : (myJson.solution) ? myJson.solution[0] * 4 + myJson.solution[1] : null,
+            player : null,
+            index : mapping
+        };
+        if (myJson.primitive === "Lose") {
+            gameWon.player = huPlayer === player ? aiPlayer : huPlayer;        
+        }
+        if (myJson.primitive === "Win") {
+            gameWon.player = player;
+        }
+        return gameWon;
+    })
+}
+
 function turnClick(square) {
     if (typeof origBoard[square.target.id] == 'number') {
         turn(square.target.id, huPlayer).then(function(gameWon) {
-            if (gameWon.solution && !checkTie()) {turn(gameWon.solution, aiPlayer)}    
+            if (!gameWon.player) { turn(gameWon.solution, aiPlayer) }    
         });
     }
 }
@@ -51,30 +71,10 @@ function turn(squareId, player) {
         }
     }
     document.getElementById(squareId).innerText = player;
-    return checkWin(player).then(function(gameWon) {
-        if (!gameWon.solution) { gameOver(gameWon); }
-        else { checkTie(); }
+    return checkWin((player === huPlayer) ? aiPlayer : huPlayer).then(function(gameWon) {
+        if (gameWon.player && !checkTie()) { gameOver(gameWon); }
         return gameWon;   
     }); 
-}
-
-function checkWin(player) {
-    return fetchJson(player).then(function(myJson) {
-        console.log(myJson)
-        var mapping = myJson.primitiveState.map((val)=>{
-            return val[0] * 4 + val[1];
-        });
-        let gameWon = {solution : (myJson.solution) ? myJson.solution[0] * 4 + myJson.solution[1] : null,
-            player : null,
-            index : mapping};
-        if (myJson.primitive === "Lose") {
-            gameWon.player = player;        
-        }
-        if (myJson.primitive === "Win") {
-            gameWon.player = huPlayer === player ? aiPlayer : huPlayer;
-        }
-        return gameWon;
-    })
 }
 
 function gameOver(gameWon) {
@@ -86,6 +86,18 @@ function gameOver(gameWon) {
         cells[i].removeEventListener('click', turnClick, false);
     }
     declareWinner(gameWon.player == huPlayer ? "You Win!" : "You lose");
+}
+
+function checkTie() {
+    if (emptySquares().length == 0) {
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].style.backgroundColor = "green";
+            cells[i].removeEventListener('click', turnClick, false);
+        }
+        declareWinner("Tie Game!");
+        return true;
+    }
+    return false;
 }
 
 function declareWinner(who) {
@@ -101,16 +113,4 @@ function fetchJson(player) {
     return fetch('/solver/' + player + '/' + string_hash).then(function(response) {
         return response.json();
     })
-}
-
-function checkTie() {
-    if (emptySquares().length == 0) {
-        for (var i = 0; i < cells.length; i++) {
-            cells[i].style.backgroundColor = "green";
-            cells[i].removeEventListener('click', turnClick, false);
-        }
-        declareWinner("Tie Game!");
-        return true;
-    }
-    return false;
 }

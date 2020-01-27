@@ -24,11 +24,10 @@ class Solver():
             try:
                 with open(path, 'r') as f:
                     reader = csv.reader(f)
+                    next(reader)
                     for row in reader:
                         self.memory[row[0]] = row[1]
-                        self.remoteness[row[0]] = row[2]
-                    del self.memory['key']
-                    del self.remoteness['key']
+                        self.remoteness[row[0]] = int(row[2])
             except:
                 print("Automatically solving manually as path not found: " + path)
 
@@ -45,7 +44,8 @@ class Solver():
     def numValues(self, value):
         return len([i for i in self.memory.values() if i == value])
 
-    def getRemoteness(self, key=None):
+    def getRemoteness(self, key=None, game=None):
+        if game: key = game.serialize()
         return self.remoteness[key]
 
     # this one will traverse all subtree
@@ -122,13 +122,18 @@ class Solver():
         moveList = game.generateMoves()
         if not moveList: return
         random.shuffle(moveList)
-        tieMove = moveList[0]
+        tieMove, tieRemoteness = None, -1
+        lossMove, lossRemoteness = moveList[0], -1
         for move in moveList:
             newGame = game.doMove(move)
+            value = self.solve(newGame)
+            remoteness = self.getRemoteness(game=newGame)
             # The AI could pick a winning position that doesn't directly end the game.
             # TODO: Pick a move to end the game
-            if self.solve(newGame) == GameValue.LOSE:
+            if value == GameValue.LOSE:
                 return move
-            if self.solve(newGame) == GameValue.TIE:
-                tieMove = move
-        return tieMove
+            if value == GameValue.TIE and remoteness > tieRemoteness:
+                tieMove, tieRemoteness = move, remoteness
+            if value == GameValue.WIN and remoteness > lossRemoteness:
+                lossMove, lossRemoteness = move, remoteness
+        return tieMove if tieMove else lossMove

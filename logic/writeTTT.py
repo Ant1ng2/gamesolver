@@ -10,7 +10,7 @@ WINBY = 3
 NAME = r'TTT' + str(SIZE) + r'by' + str(SIZE) + r'win' + str(WINBY) + r'AndRemotenessOptimized.csv'  
 
 game = TTT(size=SIZE, winBy=3)
-solver = Solver.Solver(game=game, name=NAME, read=True)
+solver = Solver.Solver(game=game, name=NAME, read=False)
 solver.solve(game)
-#solver.writeMemory(name=NAME)
+solver.writeMemory(name=NAME)
 GameManager(game, None).play()
