@@ -3,6 +3,8 @@ __pycache__/
 *.sw[op]
 .vscode
 venv
+build
+.pytest_cache
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
