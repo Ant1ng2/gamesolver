@@ -130,9 +130,8 @@ class TTT(TierGame):
             board = flip(board)                        
         return lowest_board
 
-    def moveFromInput(self, prompt):
-        print(prompt)
-        return tuple(int(x.strip()) for x in input().split(','))
+    def moveFromInput(self, input):
+        return tuple(int(x.strip()) for x in input.split(','))
 
     def getNumTiers(self):
         return self.size ** 2 + 1

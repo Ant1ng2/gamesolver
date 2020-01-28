@@ -3,6 +3,7 @@ from gamesolver.util import *
 class GameManager:
 
     def __init__(self, game, solver=None):
+        self.base = game
         self.game = game
         self.solver = solver
         if solver:
@@ -10,6 +11,7 @@ class GameManager:
 
     # Starts the GameManager
     def play(self):
+        self.game = self.base
         while self.game.primitive() == GameValue.UNDECIDED:
             self.printInfo()
             self.printTurn()
@@ -33,7 +35,8 @@ class GameManager:
     # Prompts for input and moves
     def printTurn(self):
         if self.game.getTurn() == self.game.getFirstPlayer() or not self.solver:
-            move = self.game.moveFromInput("Enter Piece: ")
+            print("Enter Piece: ")
+            move = self.game.moveFromInput(input())
             if move not in self.game.generateMoves():
                 print("Not a valid move, try again")
             else:

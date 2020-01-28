@@ -13,10 +13,9 @@ from multiprocessing import Process, Value, Array, Manager, current_process
 
 class Solver():
 
-    def __init__(self, game=None, name='', read=False, mp=False):
+    def __init__(self, name='', read=False, mp=False):
         self.memory = {}
         self.remoteness = {}
-        self.base = game
         if mp: self.solve = self.solveTraverseMP
         if not mp: self.solve = self.solveTraverse
         path = os.path.join(os.getcwd() + r'/', name)

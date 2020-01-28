@@ -6,8 +6,8 @@ from .. import util
 
 def test_solvers():
     game = TTT()
-    solver = Solver.Solver(game)
-    tier = TierSolver.TierSolver(game)
+    solver = Solver()
+    tier = TierSolver()
     assert solver.solve(game) == util.GameValue.TIE
     assert tier.solve(game) == util.GameValue.TIE
     assert all(item in solver.memory.items() for item in tier.memory.items())

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gamesolver", # Replace with your own username
-    version="0.0.1",
+    version="0.0.2",
     author="Anthony Ling",
     author_email="acling2k@gmail.com",
     description="A solver of 2-player games",
