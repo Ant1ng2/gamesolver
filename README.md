@@ -1,3 +1,3 @@
 # GameSolver
 
-This package is still in development.
+A Python library for generalized solvers of 2-player games.
